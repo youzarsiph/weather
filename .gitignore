@@ -111,6 +111,7 @@ npm-debug.*
 *.p8
 *.p12
 *.key
+*.key.ts
 *.mobileprovision
 *.orig.*
 web-build/

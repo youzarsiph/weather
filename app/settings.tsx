@@ -3,40 +3,57 @@
  */
 
 import React from "react";
-import Styles from "../styles";
-import { View } from "react-native";
 import * as SecureStore from "expo-secure-store";
-import { Screen } from "../components";
-import { Button, List, RadioButton } from "react-native-paper";
+import { Button, List, RadioButton, useTheme } from "react-native-paper";
+import { ImageBackground, ScrollView, View } from "react-native";
+import Styles from "../styles";
 import { State } from "../types";
+import { Screen } from "../components";
 
 interface SettingsState extends State {
+  speed: string;
   theme: string;
-  color: string;
+  temperature: string;
+  pressure: string;
 }
 
 const Settings = () => {
+  // Theme
+  const theme = useTheme();
+
+  const card = {
+    ...Styles.card,
+    paddingBottom: 16,
+    backgroundColor: theme.colors.elevation.level1,
+  };
+
   // State
   const [state, setState] = React.useState<SettingsState>({
     loading: true,
-    theme: "",
-    color: "",
-    message: "",
-    displayMessage: false,
-    displayModal: false,
+    speed: "k",
+    theme: "light",
+    temperature: "c",
+    pressure: "m",
   });
+
+  // Message
+  const [message, setMessage] = React.useState<string>("");
+  const [displayMessage, setDisplayMessage] = React.useState<boolean>(false);
 
   // Load settings
   React.useEffect(() => {
     (async () => {
       const theme = await SecureStore.getItemAsync("theme");
-      const color = await SecureStore.getItemAsync("color");
+      const speed = await SecureStore.getItemAsync("speed");
+      const temperature = await SecureStore.getItemAsync("temperature");
+      const pressure = await SecureStore.getItemAsync("pressure");
 
       setState({
-        ...state,
-        theme: theme || "light",
-        color: color || "purple",
         loading: false,
+        speed: speed || "k",
+        theme: theme || "light",
+        temperature: temperature || "c",
+        pressure: pressure || "m",
       });
     })();
   }, []);
@@ -45,56 +62,83 @@ const Settings = () => {
   const applySettings = () => {
     (async () => {
       await SecureStore.setItemAsync("theme", state.theme);
-      await SecureStore.setItemAsync("color", state.color);
+      await SecureStore.setItemAsync("speed", state.speed);
+      await SecureStore.setItemAsync("pressure", state.pressure);
+      await SecureStore.setItemAsync("temperature", state.temperature);
 
-      setState({
-        ...state,
-        message: "Settings applied, restart the app to reflect the changes",
-        displayMessage: true,
-      });
+      // Display success message
+      setMessage("Settings applied, restart the app to reflect the changes");
+      setDisplayMessage(true);
     })();
   };
 
   return (
-    <Screen
-      loading={state.loading}
-      message={state.message}
-      displayMessage={state.displayMessage}
-      onDismissMessage={() => setState({ ...state, displayMessage: false })}
-      options={{ title: "Settings", animation: "slide_from_right" }}
+    <ImageBackground
+      blurRadius={10}
+      resizeMode="cover"
+      style={Styles.bg}
+      source={require("../assets/bgs/sunny.jpeg")}
     >
-      <View style={Styles.screen}>
-        <List.Section title="Theme">
-          <RadioButton.Group
-            value={state.theme}
-            onValueChange={(value) => setState({ ...state, theme: value })}
-          >
-            <RadioButton.Item value="light" label="Light" />
-            <RadioButton.Item value="dark" label="Dark" />
-          </RadioButton.Group>
-        </List.Section>
+      <Screen
+        options={{ title: "Settings" }}
+        loading={state.loading}
+        message={message}
+        displayMessage={displayMessage}
+        onDismissMessage={() => setDisplayMessage(false)}
+      >
+        <ScrollView>
+          <List.Section title="Theme" style={card}>
+            <RadioButton.Group
+              value={state.theme}
+              onValueChange={(value) => setState({ ...state, theme: value })}
+            >
+              <RadioButton.Item value="light" label="Light" />
+              <RadioButton.Item value="dark" label="Dark" />
+            </RadioButton.Group>
+          </List.Section>
 
-        <List.Section title="Color">
-          <RadioButton.Group
-            value={state.color}
-            onValueChange={(value) => setState({ ...state, color: value })}
-          >
-            <RadioButton.Item value="purple" label="Purple" />
-            <RadioButton.Item value="pink" label="Pink" />
-            <RadioButton.Item value="red" label="Red" />
-            <RadioButton.Item value="green" label="Green" />
-            <RadioButton.Item value="blue" label="Blue" />
-            <RadioButton.Item value="yellow" label="Yellow" />
-          </RadioButton.Group>
-        </List.Section>
+          <List.Section title="Speed" style={card}>
+            <RadioButton.Group
+              value={state.speed}
+              onValueChange={(value) => setState({ ...state, speed: value })}
+            >
+              <RadioButton.Item value="k" label="Kilometer per hour" />
+              <RadioButton.Item value="m" label="Mile per hour" />
+            </RadioButton.Group>
+          </List.Section>
 
-        <View style={{ paddingHorizontal: 16 }}>
-          <Button mode="contained" onPress={applySettings}>
-            Apply Settings
-          </Button>
-        </View>
-      </View>
-    </Screen>
+          <List.Section title="Temperature" style={card}>
+            <RadioButton.Group
+              value={state.temperature}
+              onValueChange={(value) =>
+                setState({ ...state, temperature: value })
+              }
+            >
+              <RadioButton.Item value="c" label="Celsius" />
+              <RadioButton.Item value="f" label="Fahrenheit" />
+            </RadioButton.Group>
+          </List.Section>
+
+          <List.Section title="Pressure" style={card}>
+            <RadioButton.Group
+              value={state.pressure}
+              onValueChange={(value) =>
+                setState({ ...state, pressure: value })
+              }
+            >
+              <RadioButton.Item value="m" label="Millie" />
+              <RadioButton.Item value="i" label="Inch" />
+            </RadioButton.Group>
+          </List.Section>
+
+          <View style={{ ...card, ...Styles.btnContainer }}>
+            <Button mode="contained" onPress={applySettings}>
+              Apply Settings
+            </Button>
+          </View>
+        </ScrollView>
+      </Screen>
+    </ImageBackground>
   );
 };
 

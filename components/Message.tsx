@@ -3,26 +3,31 @@
  */
 
 import React from "react";
-import { Snackbar } from "react-native-paper";
+import { MD3Theme, Snackbar, Text } from "react-native-paper";
 
 const Message = (props: {
-  visible: boolean;
-  message: string;
+  theme: MD3Theme;
+  visible?: boolean;
+  message?: string;
   onDismiss: () => void;
-}) => {
-  return (
-    <Snackbar
-      visible={props.visible}
-      onDismiss={() => props.onDismiss()}
-      action={{
-        label: "Close",
-        icon: "window-close",
-        onPress: () => props.onDismiss(),
-      }}
-    >
-      {props.message}
-    </Snackbar>
-  );
-};
+}) => (
+  <Snackbar
+    style={{
+      backgroundColor: props.theme.dark
+        ? "rgb(38, 35, 41)"
+        : "rgb(248, 241, 253)",
+    }}
+    elevation={0}
+    visible={props.visible || false}
+    onDismiss={() => props.onDismiss()}
+    action={{
+      label: "Close",
+      icon: "window-close",
+      onPress: () => props.onDismiss(),
+    }}
+  >
+    <Text>{props.message}</Text>
+  </Snackbar>
+);
 
 export default Message;

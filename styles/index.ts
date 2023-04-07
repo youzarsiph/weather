@@ -8,20 +8,35 @@ const Styles = StyleSheet.create({
   screen: {
     flex: 1,
   },
+  card: {
+    borderRadius: 16,
+    marginHorizontal: 8,
+  },
   fullScreen: {
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
   },
-  modal: {
+  icon: {
+    padding: 3,
+    borderRadius: 16,
+  },
+  bg: {
+    flex: 1,
+    paddingTop: 64,
+  },
+  view: {
+    flex: 1,
+    paddingBottom: 16,
+  },
+  header: {
+    position: "absolute",
     left: 0,
     right: 0,
-    bottom: 0,
-    rowGap: 16,
-    padding: 20,
-    position: "absolute",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+  },
+  btnContainer: {
+    padding: 16,
+    marginVertical: 16
   },
 });
 

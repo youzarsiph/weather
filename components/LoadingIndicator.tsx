@@ -5,12 +5,20 @@
 import React from "react";
 import Styles from "../styles";
 import { View } from "react-native";
-import { ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator, MD3Theme } from "react-native-paper";
 
-const LoadingIndicator = () => {
+const LoadingIndicator = (props: { theme: MD3Theme }) => {
   return (
     <View style={Styles.fullScreen}>
-      <ActivityIndicator size={"large"} />
+      <View
+        style={{
+          ...Styles.card,
+          padding: 26,
+          backgroundColor: props.theme.colors.elevation.level1,
+        }}
+      >
+        <ActivityIndicator size={"large"} />
+      </View>
     </View>
   );
 };
